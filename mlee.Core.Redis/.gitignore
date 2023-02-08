@@ -1,0 +1,6 @@
+.svn/
+.vs/
+.vscode/
+bin/
+obj/
+*.log

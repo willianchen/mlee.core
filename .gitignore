@@ -1,0 +1,15 @@
+/mlee.Core.Admin/obj
+/mlee.Core.Admin/bin
+/mlee.Core/obj
+/mlee.Core/bin
+/mlee.Core.Admin.Repository/obj
+/mlee.Core.Admin.Repository/bin
+/mlee.Core.Admin.Services/obj
+/mlee.Core.Admin.Services/bin
+/mlee.Core.DataAccess/obj
+/mlee.Core.DataAccess/bin
+/mlee.Core.Library/bin
+/mlee.Core.Library/obj
+/mlee.Core.Loggers/obj
+/mlee.Core.Loggers/bin
+/mlee.Core.Admin/.vs
