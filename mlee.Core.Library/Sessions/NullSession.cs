@@ -15,7 +15,7 @@ namespace mlee.Core.Library.Sessions
         /// <summary>
         /// 用户编号
         /// </summary>
-        public string UserId => string.Empty;
+     //   public string UserId => string.Empty;
 
         /// <summary>
         /// 登录用户名
@@ -30,6 +30,10 @@ namespace mlee.Core.Library.Sessions
         public string RoleName => string.Empty;
 
         public string ExtData => string.Empty;
+
+        public long UserId { get; set; } = 0;
+        public long TenantId { get; set; } = 0;
+        public bool PlatformAdmin { get; set; } = false;
 
         /// <summary>
         /// 空用户会话实例

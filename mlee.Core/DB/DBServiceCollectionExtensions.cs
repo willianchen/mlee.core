@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using mlee.Core.DataAccess.Db;
-using mlee.Core.DataAccess.Db.Transaction;
+using mlee.Core.DB;
+using mlee.Core.DB.Transaction;
 using mlee.Core.Library.Configs;
 using mlee.Core.Library.Helpers;
 using mlee.Core.Library.Sessions;
@@ -67,3 +67,4 @@ namespace mlee.Core.Db
             _dicMySqlVersion.SetValue(new ConcurrentDictionary<string, string>(), dicMySqlVersion);
         }
     }
+}

@@ -4,8 +4,8 @@ using mlee.Core.Redis.RedisConfig;
 using System.Reflection;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
-using HuntNet.Library.Cache;
 using mlee.Core.Redis.Cache;
+using mlee.Core.Library.Cache;
 
 namespace mlee.Core.Redis
 {

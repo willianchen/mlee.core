@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using mlee.Core.Redis.RedisConfig;
 using Microsoft.Extensions.Options;
-using HuntNet.Library;
+using mlee.Core.Library;
 
 namespace mlee.Core.Redis.RedisManage
 {

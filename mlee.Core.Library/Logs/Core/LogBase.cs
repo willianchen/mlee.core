@@ -86,7 +86,7 @@ namespace mlee.Core.Library.Logs.Core
             content.ThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId.ToString();
             content.Browser = Context.Browser;
             content.Url = Web.Url;
-            content.UserId = Session.UserId;
+            content.UserId = Session.UserId.ToString();
         }
 
         /// <summary>

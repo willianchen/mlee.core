@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mlee.Core.DataAccess.Db
+namespace mlee.Core.DB
 {
     public class FreeSqlCloud : FreeSqlCloud<string>
     {

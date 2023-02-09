@@ -13,12 +13,35 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Npgsql.TypeHandlers.GeometricHandlers;
-using StackExchange.Redis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using System.Security.AccessControl;
 using mlee.Core.Library.Sessions;
+using Microsoft.Extensions.DependencyModel;
+using Yitter.IdGenerator;
+using mlee.Core.Db;
+using mlee.Core.Consts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using mlee.Core.Auth;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using System.Text.RegularExpressions;
+using Microsoft.OpenApi.Any;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using mlee.Core.Library.Attributes;
+using mlee.Core.Filters;
+using mlee.Core.Library.Logs;
+using mlee.Core.Loggers.Extensions;
+using mlee.Core.Attributes;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using mlee.Core.Library;
+using mlee.Core.Middlewares;
+using mlee.Core.Library.Cache;
+using mlee.Core.Redis;
 
 namespace mlee.Core.Core
 {
@@ -125,9 +148,9 @@ namespace mlee.Core.Core
             _hostAppOptions?.ConfigurePreServices?.Invoke(hostAppContext);
 
             //雪花漂移算法
-            /*     var idGeneratorOptions = new IdGeneratorOptions(1) { WorkerIdBitLength = 6 };
-                 _hostAppOptions?.ConfigureIdGenerator?.Invoke(idGeneratorOptions);
-                 YitIdHelper.SetIdGenerator(idGeneratorOptions);*/
+            var idGeneratorOptions = new IdGeneratorOptions(1) { WorkerIdBitLength = 6 };
+            _hostAppOptions?.ConfigureIdGenerator?.Invoke(idGeneratorOptions);
+            YitIdHelper.SetIdGenerator(idGeneratorOptions);
 
             //权限处理
             //   services.AddScoped<IPermissionHandler, PermissionHandler>();
@@ -150,9 +173,9 @@ namespace mlee.Core.Core
             }
 
             //上传配置
-            var uploadConfig = ConfigHelper.Load("uploadconfig", env.EnvironmentName, true);
-            services.Configure<UploadConfig>(uploadConfig);
-
+            /*   var uploadConfig = ConfigHelper.Load("uploadconfig", env.EnvironmentName, true);
+               services.Configure<UploadConfig>(uploadConfig);
+   */
             //程序集
             Assembly[] assemblies = null;
             if (appConfig.AssemblyNames?.Length > 0)
@@ -163,11 +186,11 @@ namespace mlee.Core.Core
             }
 
             #region Mapster 映射配置
-            services.AddScoped<IMapper>(sp => new Mapper());
-            if (assemblies?.Length > 0)
-            {
-                TypeAdapterConfig.GlobalSettings.Scan(assemblies);
-            }
+            /* services.AddScoped<IMapper>(sp => new Mapper());
+             if (assemblies?.Length > 0)
+             {
+                 TypeAdapterConfig.GlobalSettings.Scan(assemblies);
+             }*/
             #endregion Mapster 映射配置
 
             #region Cors 跨域
@@ -213,20 +236,20 @@ namespace mlee.Core.Core
 
             if (appConfig.IdentityServer.Enable)
             {
-                //is4
-                services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = nameof(ResponseAuthenticationHandler); //401
-                    options.DefaultForbidScheme = nameof(ResponseAuthenticationHandler);    //403
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.Authority = appConfig.IdentityServer.Url;
-                    options.RequireHttpsMetadata = false;
-                    options.Audience = "admin.server.api";
-                })
-                .AddScheme<AuthenticationSchemeOptions, ResponseAuthenticationHandler>(nameof(ResponseAuthenticationHandler), o => { });
+                /* //is4
+                 services.AddAuthentication(options =>
+                 {
+                     options.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+                     options.DefaultChallengeScheme = nameof(ResponseAuthenticationHandler); //401
+                     options.DefaultForbidScheme = nameof(ResponseAuthenticationHandler);    //403
+                 })
+                 .AddJwtBearer(options =>
+                 {
+                     options.Authority = appConfig.IdentityServer.Url;
+                     options.RequireHttpsMetadata = false;
+                     options.Audience = "admin.server.api";
+                 })
+                 .AddScheme<AuthenticationSchemeOptions, ResponseAuthenticationHandler>(nameof(ResponseAuthenticationHandler), o => { });*/
             }
             else
             {
@@ -292,7 +315,7 @@ namespace mlee.Core.Core
                         if (dynamicApiAttribute != null)
                         {
                             var dynamicApi = dynamicApiAttribute as DynamicApiAttribute;
-                            if (dynamicApi.GroupNames?.Length > 0)
+                            if (dynamicApi?.GroupNames?.Length > 0)
                             {
                                 groupNames.AddRange(dynamicApi.GroupNames);
                             }
@@ -302,7 +325,7 @@ namespace mlee.Core.Core
                         if (apiGroupAttribute != null)
                         {
                             var apiGroup = apiGroupAttribute as ApiGroupAttribute;
-                            if (apiGroup.GroupNames?.Length > 0)
+                            if (apiGroup?.GroupNames?.Length > 0)
                             {
                                 groupNames.AddRange(apiGroup.GroupNames);
                             }
@@ -430,7 +453,7 @@ namespace mlee.Core.Core
 
             if (appConfig.Log.Operation)
             {
-                services.AddScoped<ILogHandler, LogHandler>();
+                services.UseNLog();
             }
 
             #endregion 操作日志
@@ -438,7 +461,6 @@ namespace mlee.Core.Core
             #region 控制器
             void mvcConfigure(MvcOptions options)
             {
-                //options.Filters.Add<ControllerExceptionFilter>();
                 options.Filters.Add<ValidateInputFilter>();
                 if (appConfig.Validate.Login || appConfig.Validate.Permission)
                 {
@@ -446,10 +468,10 @@ namespace mlee.Core.Core
                 }
                 //在具有较高的 Order 值的筛选器之前运行 before 代码
                 //在具有较高的 Order 值的筛选器之后运行 after 代码
-                if (appConfig.DynamicApi.FormatResult)
-                {
-                    options.Filters.Add<FormatResultFilter>(20);
-                }
+                /*    if (appConfig.DynamicApi.FormatResult)
+                    {
+                        options.Filters.Add<FormatResultFilter>(20);
+                    }*/
                 if (appConfig.Log.Operation)
                 {
                     options.Filters.Add<ControllerLogFilter>(10);
@@ -458,11 +480,11 @@ namespace mlee.Core.Core
                 //禁止去除ActionAsync后缀
                 //options.SuppressAsyncSuffixInActionNames = false;
 
-                if (env.IsDevelopment() || appConfig.Swagger.Enable)
-                {
-                    //API分组约定
-                    options.Conventions.Add(new ApiGroupConvention());
-                }
+                /*   if (env.IsDevelopment() || appConfig.Swagger.Enable)
+                   {
+                       //API分组约定
+                       options.Conventions.Add(new ApiGroupConvention());
+                   }*/
             }
 
             var mvcBuilder = appConfig.AppType switch
@@ -504,24 +526,27 @@ namespace mlee.Core.Core
             var cacheConfig = ConfigHelper.Get<CacheConfig>("cacheconfig", env.EnvironmentName);
             if (cacheConfig.Type == CacheType.Redis)
             {
-                var csredis = new CSRedis.CSRedisClient(cacheConfig.Redis.ConnectionString);
-                RedisHelper.Initialization(csredis);
-                services.AddSingleton<ICacheTool, RedisCacheTool>();
+                services.AddRedisRepository((option =>
+                {
+                    option.Connection = cacheConfig.Redis.ConnectionString;
+                }));
+                //  services.AddSingleton<ICache, mlee.Core.Redis.Cache.RedisCache>();
+
             }
             else
-            {
+            {//带实现
                 services.AddMemoryCache();
-                services.AddSingleton<ICacheTool, MemoryCacheTool>();
+                //  services.AddSingleton<ICache, MemoryCacheTool>();
             }
 
             #endregion 缓存
 
             #region IP限流
 
-            if (appConfig.RateLimit)
-            {
-                services.AddIpRateLimit(configuration, cacheConfig);
-            }
+            /*      if (appConfig.RateLimit)
+                  {
+                      services.AddIpRateLimit(configuration, cacheConfig);
+                  }*/
 
             #endregion IP限流
 
@@ -529,24 +554,24 @@ namespace mlee.Core.Core
             services.Configure<ConsoleLifetimeOptions>(opts => opts.SuppressStatusMessages = true);
 
             //性能分析
-            if (appConfig.MiniProfiler)
-            {
-                services.AddMiniProfiler();
-            }
+            /*    if (appConfig.MiniProfiler)
+                {
+                    services.AddMiniProfiler();
+                }*/
 
-            //动态api
-            services.AddDynamicApi(options =>
-            {
-                Assembly[] assemblies = DependencyContext.Default.RuntimeLibraries
-                .Where(a => a.Name.EndsWith("Service"))
-                .Select(o => Assembly.Load(new AssemblyName(o.Name))).ToArray();
-                options.AddAssemblyOptions(assemblies);
+            /*       //动态api
+                   services.AddDynamicApi(options =>
+                   {
+                       Assembly[] assemblies = DependencyContext.Default.RuntimeLibraries
+                       .Where(a => a.Name.EndsWith("Service"))
+                       .Select(o => Assembly.Load(new AssemblyName(o.Name))).ToArray();
+                       options.AddAssemblyOptions(assemblies);
 
-                options.FormatResult = appConfig.DynamicApi.FormatResult;
-                options.FormatResultType = typeof(ResultOutput<>);
+                       options.FormatResult = appConfig.DynamicApi.FormatResult;
+                       options.FormatResultType = typeof(ResultOutput<>);
 
-                _hostAppOptions?.ConfigureDynamicApi?.Invoke(options);
-            });
+                       _hostAppOptions?.ConfigureDynamicApi?.Invoke(options);
+                   });*/
 
             _hostAppOptions?.ConfigurePostServices?.Invoke(hostAppContext);
         }
@@ -572,22 +597,22 @@ namespace mlee.Core.Core
             //异常处理
             app.UseMiddleware<ExceptionMiddleware>();
 
-            //IP限流
-            if (appConfig.RateLimit)
-            {
-                app.UseIpRateLimiting();
-            }
+            /* //IP限流
+             if (appConfig.RateLimit)
+             {
+                 app.UseIpRateLimiting();
+             }
 
-            //性能分析
-            if (appConfig.MiniProfiler)
-            {
-                app.UseMiniProfiler();
-            }
-
+             //性能分析
+             if (appConfig.MiniProfiler)
+             {
+                 app.UseMiniProfiler();
+             }
+ */
             //静态文件
             app.UseDefaultFiles();
             app.UseStaticFiles();
-            app.UseUploadConfig();
+            //app.UseUploadConfig();
 
             //路由
             app.UseRouting();
@@ -601,21 +626,21 @@ namespace mlee.Core.Core
             //授权
             app.UseAuthorization();
 
-            //登录用户初始化数据权限
-            if (appConfig.Validate.Permission)
-            {
-                app.Use(async (ctx, next) =>
-                {
-                    var user = ctx.RequestServices.GetRequiredService<IUser>();
-                    if (user?.Id > 0)
-                    {
-                        var userService = ctx.RequestServices.GetRequiredService<IUserService>();
-                        await userService.GetDataPermissionAsync();
-                    }
+            /*  //登录用户初始化数据权限
+              if (appConfig.Validate.Permission)
+              {
+                  app.Use(async (ctx, next) =>
+                  {
+                      var user = ctx.RequestServices.GetRequiredService<IUser>();
+                      if (user?.Id > 0)
+                      {
+                          var userService = ctx.RequestServices.GetRequiredService<IUserService>();
+                          await userService.GetDataPermissionAsync();
+                      }
 
-                    await next();
-                });
-            }
+                      await next();
+                  });
+              }*/
 
             //配置端点
             app.MapControllers();
@@ -655,6 +680,22 @@ namespace mlee.Core.Core
             #endregion Swagger Api文档
 
             _hostAppOptions?.ConfigurePostMiddleware?.Invoke(hostAppMiddlewareContext);
+        }
+
+        /// <summary>
+        /// 实体类型重命名
+        /// </summary>
+        /// <param name="modelType"></param>
+        /// <returns></returns>
+        private string DefaultSchemaIdSelector(Type modelType)
+        {
+            if (!modelType.IsConstructedGenericType) return modelType.Name.Replace("[]", "Array");
+
+            var prefix = modelType.GetGenericArguments()
+                .Select(DefaultSchemaIdSelector)
+                .Aggregate((previous, current) => previous + current);
+
+            return modelType.Name.Split('`').First() + prefix;
         }
     }
 }

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\mlee.Core.DataAccess\mlee.Core.DataAccess.csproj" />
+    <ProjectReference Include="..\mlee.Core\mlee.Core.csproj" />
   </ItemGroup>
 
 </Project>

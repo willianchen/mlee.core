@@ -16,4 +16,8 @@
     <ProjectReference Include="..\mlee.Core.Library\mlee.Core.Library.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Db\" />
+  </ItemGroup>
+
 </Project>

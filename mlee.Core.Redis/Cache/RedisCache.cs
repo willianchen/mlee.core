@@ -1,4 +1,4 @@
-﻿using HuntNet.Library.Cache;
+﻿using mlee.Core.Library.Cache;
 using mlee.Core.Redis.IRedisManage;
 using Nito.AsyncEx;
 using System;

@@ -25,14 +25,6 @@ namespace mlee.Core.Library.Sessions
         /// </summary>
         public bool IsAuthenticated { get; } = false;// Web.Identity.IsAuthenticated;
 
-        /// <summary>
-        /// 用户标识
-        /// </summary>
-        public string UserId
-        {
-            get; set;
-        }
-
         public string UserName { get; set; }
 
         /// <summary>
@@ -43,5 +35,11 @@ namespace mlee.Core.Library.Sessions
         public string RoleName => string.Empty;
 
         public string ExtData => string.Empty;
+
+        public long UserId { get; set; } = 0;
+        public long TenantId { get; set; } = 0;
+        public bool PlatformAdmin { get; set; } = false;
+
+        long ISession.UserId => throw new NotImplementedException();
     }
 }

@@ -1,6 +1,6 @@
 ﻿using mlee.Core.Admin.Repository.Consts;
-using mlee.Core.DataAccess.Db.Transaction;
-using mlee.Core.DataAccess.Repositories;
+using mlee.Core.DB.Transaction;
+using mlee.Core.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;

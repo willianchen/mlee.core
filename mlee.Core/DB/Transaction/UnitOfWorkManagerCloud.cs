@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mlee.Core.DataAccess.Db.Transaction
+namespace mlee.Core.DB.Transaction
 {
     public class UnitOfWorkManagerCloud
     {

@@ -1,5 +1,6 @@
 ﻿using FreeSql;
-using mlee.Core.DataAccess.Db.Transaction;
+using mlee.Core.Repositories;
+using mlee.Core.DB.Transaction;
 using Org.BouncyCastle.Utilities.Collections;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mlee.Core.DataAccess.Repositories
+namespace mlee.Core.Repositories
 {
     public class RepositoryBase<TEntity, TKey> : DefaultRepository<TEntity, TKey>, IRepositoryBase<TEntity, TKey> where TEntity : class
     {

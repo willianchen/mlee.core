@@ -13,7 +13,7 @@ namespace mlee.Core.Library.Sessions
         /// <summary>
         /// 用户标识
         /// </summary>
-        string UserId { get; }
+        long UserId { get; }
 
         /// <summary>
         /// 用户名
@@ -35,5 +35,10 @@ namespace mlee.Core.Library.Sessions
         /// </summary>
         string ExtData { get; }
 
+        long TenantId { get; set; }
+        /// <summary>
+        /// 平台管理员
+        /// </summary>
+        public bool PlatformAdmin { get; set; }
     }
 }

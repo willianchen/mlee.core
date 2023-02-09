@@ -12,8 +12,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyModel;
 using FreeSql.DataAnnotations;
-using mlee.Core.DataAccess.Db;
 using Microsoft.AspNetCore.Http;
+using mlee.Core.Library.Entities;
+using mlee.Core.Library.Attributes;
+using Yitter.IdGenerator;
+using mlee.Core.Consts;
+using StackExchange.Profiling;
 
 namespace mlee.Core.DB
 {
@@ -137,7 +141,7 @@ namespace mlee.Core.DB
         /// <param name="e"></param>
         /// <param name="timeOffset"></param>
         /// <param name="user"></param>
-        public static void AuditValue(AuditValueEventArgs e, TimeSpan timeOffset, IUser user)
+        public static void AuditValue(AuditValueEventArgs e, TimeSpan timeOffset, mlee.Core.Library.Sessions.ISession user)
         {
             //数据库时间
             if ((e.Column.CsType == typeof(DateTime) || e.Column.CsType == typeof(DateTime?))
@@ -154,67 +158,67 @@ namespace mlee.Core.DB
             {
                 e.Value = YitIdHelper.NextId();
             }
-
-            //有序Guid
-            if (e.Column.CsType == typeof(Guid)
-            && e.Property.GetCustomAttribute<OrderGuidAttribute>(false) is OrderGuidAttribute orderGuidAttribute
-            && orderGuidAttribute.Enable && (e.Value == null || (Guid)e.Value == default || (Guid?)e.Value == default))
-            {
-                e.Value = FreeUtil.NewMongodbId();
-            }
-
-            if (user == null || user.Id <= 0)
-            {
-                return;
-            }
-
-            if (e.AuditValueType == AuditValueType.Insert || e.AuditValueType == AuditValueType.InsertOrUpdate)
-            {
-                switch (e.Property.Name)
-                {
-                    case "CreatedUserId":
-                    case "OwnerId":
-                    case "MemberId":
-                        if (e.Value == null || (long)e.Value == default || (long?)e.Value == default)
+            /*
+                        //有序Guid
+                        if (e.Column.CsType == typeof(Guid)
+                        && e.Property.GetCustomAttribute<OrderGuidAttribute>(false) is OrderGuidAttribute orderGuidAttribute
+                        && orderGuidAttribute.Enable && (e.Value == null || (Guid)e.Value == default || (Guid?)e.Value == default))
                         {
+                            e.Value = FreeUtil.NewMongodbId();
+                        }*/
+
+            /*    if (user == null || user.Id <= 0)
+                {
+                    return;
+                }
+
+                if (e.AuditValueType == AuditValueType.Insert || e.AuditValueType == AuditValueType.InsertOrUpdate)
+                {
+                    switch (e.Property.Name)
+                    {
+                        case "CreatedUserId":
+                        case "OwnerId":
+                        case "MemberId":
+                            if (e.Value == null || (long)e.Value == default || (long?)e.Value == default)
+                            {
+                                e.Value = user.Id;
+                            }
+                            break;
+
+                        case "CreatedUserName":
+                            if (e.Value == null || ((string)e.Value).IsNull())
+                            {
+                                e.Value = user.UserName;
+                            }
+                            break;
+                        case "OwnerOrgId":
+                            if (e.Value == null || (long)e.Value == default || (long?)e.Value == default)
+                            {
+                                e.Value = user.DataPermission?.OrgId;
+                            }
+                            break;
+                        case "TenantId":
+                            if (e.Value == null || (long)e.Value == default || (long?)e.Value == default)
+                            {
+                                e.Value = user.TenantId;
+                            }
+                            break;
+
+                    }
+                }
+                else if (e.AuditValueType == AuditValueType.Update || e.AuditValueType == AuditValueType.InsertOrUpdate)
+                {
+                    switch (e.Property.Name)
+                    {
+                        case "ModifiedUserId":
                             e.Value = user.Id;
-                        }
-                        break;
+                            break;
 
-                    case "CreatedUserName":
-                        if (e.Value == null || ((string)e.Value).IsNull())
-                        {
+                        case "ModifiedUserName":
                             e.Value = user.UserName;
-                        }
-                        break;
-                    case "OwnerOrgId":
-                        if (e.Value == null || (long)e.Value == default || (long?)e.Value == default)
-                        {
-                            e.Value = user.DataPermission?.OrgId;
-                        }
-                        break;
-                    case "TenantId":
-                        if (e.Value == null || (long)e.Value == default || (long?)e.Value == default)
-                        {
-                            e.Value = user.TenantId;
-                        }
-                        break;
-
-                }
-            }
-            else if (e.AuditValueType == AuditValueType.Update || e.AuditValueType == AuditValueType.InsertOrUpdate)
-            {
-                switch (e.Property.Name)
-                {
-                    case "ModifiedUserId":
-                        e.Value = user.Id;
-                        break;
-
-                    case "ModifiedUserName":
-                        e.Value = user.UserName;
-                        break;
-                }
-            }
+                            break;
+                    }
+                }*/
         }
 
         /// <summary>
@@ -338,7 +342,7 @@ namespace mlee.Core.DB
             {
                 Console.WriteLine($"{Environment.NewLine} sync data started");
 
-             if (dbConfig.AssemblyNames?.Length > 0)
+                if (dbConfig.AssemblyNames?.Length > 0)
                 {
                     db.Aop.AuditValue += SyncDataAuditValue;
 
@@ -475,11 +479,11 @@ namespace mlee.Core.DB
                     fsql.GlobalFilter.ApplyOnly<ITenant>(FilterNames.Tenant, a => a.TenantId == user.TenantId);
                 }
 
-                //会员过滤器
-                fsql.GlobalFilter.ApplyOnly<IMember>(FilterNames.Member, a => a.MemberId == user.Id);
-
+              /*  //会员过滤器
+                fsql.GlobalFilter.ApplyOnly<IMember>(FilterNames.Member, a => a.MemberId == user.UserId);
+*/
                 //数据权限过滤器
-                fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Self,
+            /*    fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Self,
                     () =>
                     {
                         if (!(user?.Id > 0))
@@ -490,8 +494,8 @@ namespace mlee.Core.DB
                         return false;
                     },
                     a => a.OwnerId == user.Id
-                );
-                fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Data,
+                );*/
+               /* fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Data,
                     () =>
                     {
                         if (!(user?.Id > 0))
@@ -502,7 +506,7 @@ namespace mlee.Core.DB
                         return false;
                     },
                     a => a.OwnerId == user.Id || user.DataPermission.OrgIds.Contains(a.OwnerOrgId.Value)
-                );
+                );*/
 
                 //配置实体
                 ConfigEntity(fsql, appConfig, dbConfig);

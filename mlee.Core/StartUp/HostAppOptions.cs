@@ -1,5 +1,6 @@
 ﻿using FreeSql;
 using System;
+using Yitter.IdGenerator;
 
 namespace mlee.Core.StartUp
 {
@@ -54,10 +55,10 @@ namespace mlee.Core.StartUp
         /// </summary>
         public Action<DynamicApiOptions> ConfigureDynamicApi { get; set; }*/
 
-      /*  /// <summary>
+      /// <summary>
         /// 配置雪花漂移算法
         /// </summary>
-        public Action<IdGeneratorOptions> ConfigureIdGenerator { get; set; }*/
+        public Action<IdGeneratorOptions> ConfigureIdGenerator { get; set; }
 
         /// <summary>
         /// 自定义数据库初始化
