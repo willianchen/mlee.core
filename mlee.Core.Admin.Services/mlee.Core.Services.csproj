@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\mlee.Core.Admin.Repository\mlee.Core.Repository.csproj" />
     <ProjectReference Include="..\mlee.Core.Library\mlee.Core.Library.csproj" />
   </ItemGroup>
 

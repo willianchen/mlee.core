@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using mlee.Core.Library.Cache;
+using mlee.Core.Library.Dependency;
+using mlee.Core.Library.Helpers;
 using mlee.Core.Library.Logs;
 using mlee.Core.Library.ObjExtensions;
 using mlee.Core.Library.Sessions;
@@ -11,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace mlee.Core.Admin.Services
 {
-    public abstract class BaseService : IBaseService
+    public abstract class BaseService : IBaseService, IScopeDependency
     {
         protected readonly object ServiceProviderLock = new object();
         protected IDictionary<Type, object> CachedServices = new Dictionary<Type, object>();
@@ -57,7 +59,7 @@ namespace mlee.Core.Admin.Services
                 {
                     if (reference == null)
                     {
-                        reference = ServiceProvider.GetRequiredService<TService>();
+                        reference = Ioc.Create<TService>();
                     }
                 }
             }

@@ -49,7 +49,7 @@ namespace mlee.Core.Library.Exceptions.Prompts
                 return prompt;
             if (exception is Warning warning)
                 return warning.Message;
-            if (Web.Environment.IsDevelopment() || IsShowSystemException)
+            if ((Web.Environment?.IsDevelopment()).ToBool() || IsShowSystemException)
                 return exception.Message;
             return "System Error";
         }

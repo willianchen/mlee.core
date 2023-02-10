@@ -23,6 +23,7 @@ namespace mlee.Core.Auth
         /// <returns></returns>
         public async Task<bool> ValidateAsync(string api, string httpMethod)
         {
+            return true;
             if (_user.PlatformAdmin)
             {
                 return true;

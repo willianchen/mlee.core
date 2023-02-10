@@ -42,6 +42,9 @@ using mlee.Core.Library;
 using mlee.Core.Middlewares;
 using mlee.Core.Library.Cache;
 using mlee.Core.Redis;
+using mlee.Core.Library.Dependency;
+using Google.Protobuf.WellKnownTypes;
+using mlee.Core.Logs;
 
 namespace mlee.Core.Core
 {
@@ -93,18 +96,22 @@ namespace mlee.Core.Core
 
             //使用Autofac容器
             builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
+
+            
+
             //配置Autofac容器
-            /*  builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+              builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
               {
-                  // 控制器注入
+                  builder.AddInfrasturcture(null, null);
+              /*    // 控制器注入
                   builder.RegisterModule(new ControllerModule());
 
                   // 单例注入
                   builder.RegisterModule(new SingleInstanceModule(appConfig));
 
                   // 模块注入
-                  builder.RegisterModule(new RegisterModule(appConfig));
-              });*/
+                  builder.RegisterModule(new RegisterModule(appConfig));*/
+              });
 
             //配置Kestrel服务器
             builder.WebHost.ConfigureKestrel((context, options) =>
@@ -153,7 +160,7 @@ namespace mlee.Core.Core
             YitIdHelper.SetIdGenerator(idGeneratorOptions);
 
             //权限处理
-            //   services.AddScoped<IPermissionHandler, PermissionHandler>();
+            services.AddScoped<IPermissionHandler, NullPermissionHandler>();
 
             // ClaimType不被更改
             JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
@@ -161,6 +168,7 @@ namespace mlee.Core.Core
             //用户信息
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.TryAddScoped<Library.Sessions.ISession, NullSession>();
+            services.TryAddScoped<ILogHandler, LogHandler>();
 
             //数据库配置
             var dbConfig = ConfigHelper.Get<DbConfig>("dbconfig", env.EnvironmentName);
@@ -254,7 +262,7 @@ namespace mlee.Core.Core
             else
             {
                 //jwt
-                services.AddAuthentication(options =>
+               services.AddAuthentication(options =>
                 {
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = nameof(ResponseAuthenticationHandler); //401
@@ -573,6 +581,9 @@ namespace mlee.Core.Core
                        _hostAppOptions?.ConfigureDynamicApi?.Invoke(options);
                    });*/
 
+
+            
+                    
             _hostAppOptions?.ConfigurePostServices?.Invoke(hostAppContext);
         }
 
@@ -595,7 +606,7 @@ namespace mlee.Core.Core
             _hostAppOptions?.ConfigurePreMiddleware?.Invoke(hostAppMiddlewareContext);
 
             //异常处理
-            app.UseMiddleware<ExceptionMiddleware>();
+           app.UseMiddleware<ExceptionMiddleware>();
 
             /* //IP限流
              if (appConfig.RateLimit)
@@ -621,10 +632,10 @@ namespace mlee.Core.Core
             app.UseCors(AdminConsts.RequestPolicyName);
 
             //认证
-            app.UseAuthentication();
+        /*    app.UseAuthentication();
 
             //授权
-            app.UseAuthorization();
+            app.UseAuthorization();*/
 
             /*  //登录用户初始化数据权限
               if (appConfig.Validate.Permission)
@@ -679,6 +690,8 @@ namespace mlee.Core.Core
             }
             #endregion Swagger Api文档
 
+            Bootstrapper.SetContainer(app.Services.GetAutofacRoot());
+            Bootstrapper.SetService(app.Services);
             _hostAppOptions?.ConfigurePostMiddleware?.Invoke(hostAppMiddlewareContext);
         }
 
@@ -687,7 +700,7 @@ namespace mlee.Core.Core
         /// </summary>
         /// <param name="modelType"></param>
         /// <returns></returns>
-        private string DefaultSchemaIdSelector(Type modelType)
+        private string DefaultSchemaIdSelector(System.Type modelType)
         {
             if (!modelType.IsConstructedGenericType) return modelType.Name.Replace("[]", "Array");
 

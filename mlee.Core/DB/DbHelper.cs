@@ -436,7 +436,7 @@ namespace mlee.Core.DB
                 var providerType = dbConfig.ProviderType.NotNull() ? Type.GetType(dbConfig.ProviderType) : null;
                 var freeSqlBuilder = new FreeSqlBuilder()
                         .UseConnectionString(dbConfig.Type, dbConfig.ConnectionString, providerType)
-                        .UseAutoSyncStructure(false)
+                        .UseAutoSyncStructure(true)
                         .UseLazyLoading(false)
                         .UseNoneCommandParameter(true);
 
@@ -524,13 +524,13 @@ namespace mlee.Core.DB
                 #region 审计数据
 
                 //计算服务器时间
-                var serverTime = fsql.Ado.QuerySingle(() => DateTime.UtcNow);
+              /*  var serverTime = fsql.Ado.QuerySingle(() => DateTime.UtcNow);
                 var timeOffset = DateTime.UtcNow.Subtract(serverTime);
                 TimeOffset = timeOffset;
                 fsql.Aop.AuditValue += (s, e) =>
                 {
                     AuditValue(e, timeOffset, user);
-                };
+                };*/
 
                 #endregion 审计数据
 

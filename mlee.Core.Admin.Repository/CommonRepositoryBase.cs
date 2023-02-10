@@ -1,5 +1,6 @@
 ﻿using mlee.Core.Admin.Repository.Consts;
 using mlee.Core.DB.Transaction;
+using mlee.Core.Library.Dependency;
 using mlee.Core.Repositories;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace mlee.Core.Admin.Repository
     /// 权限库基础仓储
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public class CommonRepositoryBase<TEntity> : RepositoryBase<TEntity> where TEntity : class
+    public class CommonRepositoryBase<TEntity> : RepositoryBase<TEntity>, IScopeDependency where TEntity : class
     {
         public CommonRepositoryBase(UnitOfWorkManagerCloud uowm) : base(DbKeys.AppDb, uowm)
         {

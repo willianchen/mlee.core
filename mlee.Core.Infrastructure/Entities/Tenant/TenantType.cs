@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace mlee.Core.Infrastructure.Entities.Tenant
+{
+
+    /// <summary>
+    /// 租户类型
+    /// </summary>
+    public enum TenantType
+    {
+        /// <summary>
+        /// 平台
+        /// </summary>
+        Platform = 1,
+
+        /// <summary>
+        /// 租户
+        /// </summary>
+        Tenant = 2
+    }
+}
