@@ -45,6 +45,9 @@ using mlee.Core.Redis;
 using mlee.Core.Library.Dependency;
 using Google.Protobuf.WellKnownTypes;
 using mlee.Core.Logs;
+using mlee.Core.DynamicApi.Attributes;
+using mlee.Core.DynamicApi;
+using mlee.Core.Library.Dto;
 
 namespace mlee.Core.Core
 {
@@ -97,21 +100,21 @@ namespace mlee.Core.Core
             //使用Autofac容器
             builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory());
 
-            
+
 
             //配置Autofac容器
-              builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
-              {
-                  builder.AddInfrasturcture(null, null);
-              /*    // 控制器注入
-                  builder.RegisterModule(new ControllerModule());
+            builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
+            {
+                builder.AddInfrasturcture(null, null);
+                /*    // 控制器注入
+                    builder.RegisterModule(new ControllerModule());
 
-                  // 单例注入
-                  builder.RegisterModule(new SingleInstanceModule(appConfig));
+                    // 单例注入
+                    builder.RegisterModule(new SingleInstanceModule(appConfig));
 
-                  // 模块注入
-                  builder.RegisterModule(new RegisterModule(appConfig));*/
-              });
+                    // 模块注入
+                    builder.RegisterModule(new RegisterModule(appConfig));*/
+            });
 
             //配置Kestrel服务器
             builder.WebHost.ConfigureKestrel((context, options) =>
@@ -262,27 +265,27 @@ namespace mlee.Core.Core
             else
             {
                 //jwt
-               services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = nameof(ResponseAuthenticationHandler); //401
-                    options.DefaultForbidScheme = nameof(ResponseAuthenticationHandler);    //403
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtConfig.Issuer,
-                        ValidAudience = jwtConfig.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecurityKey)),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                })
-                .AddScheme<AuthenticationSchemeOptions, ResponseAuthenticationHandler>(nameof(ResponseAuthenticationHandler), o => { });
+                services.AddAuthentication(options =>
+                 {
+                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                     options.DefaultChallengeScheme = nameof(ResponseAuthenticationHandler); //401
+                     options.DefaultForbidScheme = nameof(ResponseAuthenticationHandler);    //403
+                 })
+                 .AddJwtBearer(options =>
+                 {
+                     options.TokenValidationParameters = new TokenValidationParameters
+                     {
+                         ValidateIssuer = true,
+                         ValidateAudience = true,
+                         ValidateLifetime = true,
+                         ValidateIssuerSigningKey = true,
+                         ValidIssuer = jwtConfig.Issuer,
+                         ValidAudience = jwtConfig.Audience,
+                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.SecurityKey)),
+                         ClockSkew = TimeSpan.Zero
+                     };
+                 })
+                 .AddScheme<AuthenticationSchemeOptions, ResponseAuthenticationHandler>(nameof(ResponseAuthenticationHandler), o => { });
             }
 
             #endregion 身份认证授权
@@ -567,23 +570,23 @@ namespace mlee.Core.Core
                     services.AddMiniProfiler();
                 }*/
 
-            /*       //动态api
-                   services.AddDynamicApi(options =>
-                   {
-                       Assembly[] assemblies = DependencyContext.Default.RuntimeLibraries
-                       .Where(a => a.Name.EndsWith("Service"))
-                       .Select(o => Assembly.Load(new AssemblyName(o.Name))).ToArray();
-                       options.AddAssemblyOptions(assemblies);
+            //动态api
+            services.AddDynamicApi(options =>
+            {
+                Assembly[] assemblies = DependencyContext.Default.RuntimeLibraries
+                .Where(a => a.Name.EndsWith("Service"))
+                .Select(o => Assembly.Load(new AssemblyName(o.Name))).ToArray();
+                options.AddAssemblyOptions(assemblies);
 
-                       options.FormatResult = appConfig.DynamicApi.FormatResult;
-                       options.FormatResultType = typeof(ResultOutput<>);
+                options.FormatResult = appConfig.DynamicApi.FormatResult;
+                options.FormatResultType = typeof(ApiResult<>);
 
-                       _hostAppOptions?.ConfigureDynamicApi?.Invoke(options);
-                   });*/
+                _hostAppOptions?.ConfigureDynamicApi?.Invoke(options);
+            });
 
 
-            
-                    
+
+
             _hostAppOptions?.ConfigurePostServices?.Invoke(hostAppContext);
         }
 
@@ -606,7 +609,7 @@ namespace mlee.Core.Core
             _hostAppOptions?.ConfigurePreMiddleware?.Invoke(hostAppMiddlewareContext);
 
             //异常处理
-           app.UseMiddleware<ExceptionMiddleware>();
+            app.UseMiddleware<ExceptionMiddleware>();
 
             /* //IP限流
              if (appConfig.RateLimit)
@@ -632,10 +635,10 @@ namespace mlee.Core.Core
             app.UseCors(AdminConsts.RequestPolicyName);
 
             //认证
-        /*    app.UseAuthentication();
+            /*    app.UseAuthentication();
 
-            //授权
-            app.UseAuthorization();*/
+                //授权
+                app.UseAuthorization();*/
 
             /*  //登录用户初始化数据权限
               if (appConfig.Validate.Permission)

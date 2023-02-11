@@ -615,5 +615,41 @@ namespace mlee.Core.Library.Helpers
 
             return type.GetTypeInfo().BaseType.GetSingleAttributeOfTypeOrBaseTypesOrNull<TAttribute>(inherit);
         }
+
+
+        public static TAttribute GetSingleAttributeOrDefaultByFullSearch<TAttribute>(TypeInfo info)
+            where TAttribute : Attribute
+        {
+            var attributeType = typeof(TAttribute);
+            if (info.IsDefined(attributeType, true))
+            {
+                return info.GetCustomAttributes(attributeType, true).Cast<TAttribute>().First();
+            }
+            else
+            {
+                foreach (var implInter in info.ImplementedInterfaces)
+                {
+                    var res = GetSingleAttributeOrDefaultByFullSearch<TAttribute>(implInter.GetTypeInfo());
+
+                    if (res != null)
+                    {
+                        return res;
+                    }
+                }
+            }
+
+            return null;
+        }
+        public static TAttribute GetSingleAttributeOrDefault<TAttribute>(MemberInfo memberInfo, TAttribute defaultValue = default(TAttribute), bool inherit = true)
+  where TAttribute : Attribute
+        {
+            var attributeType = typeof(TAttribute);
+            if (memberInfo.IsDefined(typeof(TAttribute), inherit))
+            {
+                return memberInfo.GetCustomAttributes(attributeType, inherit).Cast<TAttribute>().First();
+            }
+
+            return defaultValue;
+        }
     }
 }

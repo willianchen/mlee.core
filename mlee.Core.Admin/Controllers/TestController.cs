@@ -7,6 +7,9 @@ using mlee.Core.Services.User.Dto;
 
 namespace mlee.Core.Admin.Controllers
 {
+    /// <summary>
+    /// 测试控制器
+    /// </summary>
     [ApiController]
     [Route("api/[controller]/[action]")]
     [AllowAnonymous]
@@ -18,6 +21,11 @@ namespace mlee.Core.Admin.Controllers
             userService = _userService;
         }
 
+        /// <summary>
+        /// Get
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ApiResult<UserGetOutput>> GetAsync(long id)
         {

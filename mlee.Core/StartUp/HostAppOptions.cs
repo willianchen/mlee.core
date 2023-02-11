@@ -1,4 +1,5 @@
 ﻿using FreeSql;
+using mlee.Core.DynamicApi;
 using System;
 using Yitter.IdGenerator;
 
@@ -49,11 +50,11 @@ namespace mlee.Core.StartUp
         /// 配置主库FreeSql
         /// </summary>
         public Action<IFreeSql> ConfigureFreeSql { get; set; }
-/*
+
         /// <summary>
         /// 配置动态Api
         /// </summary>
-        public Action<DynamicApiOptions> ConfigureDynamicApi { get; set; }*/
+        public Action<DynamicApiOptions> ConfigureDynamicApi { get; set; }
 
       /// <summary>
         /// 配置雪花漂移算法

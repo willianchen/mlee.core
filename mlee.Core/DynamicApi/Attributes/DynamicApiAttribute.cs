@@ -2,7 +2,7 @@
 using System;
 using mlee.Core.Library.Helpers;
 
-namespace mlee.Core.Library.Attributes
+namespace mlee.Core.DynamicApi.Attributes
 {
 
     [Serializable]

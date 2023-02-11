@@ -18,6 +18,8 @@ using mlee.Core.Library.Attributes;
 using Yitter.IdGenerator;
 using mlee.Core.Consts;
 using StackExchange.Profiling;
+using NPOI.POIFS.Crypt.Dsig;
+using System.Numerics;
 
 namespace mlee.Core.DB
 {
@@ -479,34 +481,34 @@ namespace mlee.Core.DB
                     fsql.GlobalFilter.ApplyOnly<ITenant>(FilterNames.Tenant, a => a.TenantId == user.TenantId);
                 }
 
-              /*  //会员过滤器
-                fsql.GlobalFilter.ApplyOnly<IMember>(FilterNames.Member, a => a.MemberId == user.UserId);
-*/
-                //数据权限过滤器
-            /*    fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Self,
-                    () =>
-                    {
-                        if (!(user?.Id > 0))
-                            return false;
-                        var dataPermission = user.DataPermission;
-                        if (user.Type == UserType.DefaultUser && dataPermission != null)
-                            return dataPermission.DataScope != DataScope.All && dataPermission.OrgIds.Count == 0;
-                        return false;
-                    },
-                    a => a.OwnerId == user.Id
-                );*/
-               /* fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Data,
-                    () =>
-                    {
-                        if (!(user?.Id > 0))
-                            return false;
-                        var dataPermission = user.DataPermission;
-                        if (user.Type == UserType.DefaultUser && dataPermission != null)
-                            return dataPermission.DataScope != DataScope.All && dataPermission.OrgIds.Count > 0;
-                        return false;
-                    },
-                    a => a.OwnerId == user.Id || user.DataPermission.OrgIds.Contains(a.OwnerOrgId.Value)
-                );*/
+                //会员过滤器
+                //  fsql.GlobalFilter.ApplyOnly<IMember>(FilterNames.Member, a => a.MemberId == user.Id);
+
+                /*      //数据权限过滤器
+                      fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Self,
+                          () =>
+                          {
+                              if (!(user?.Id > 0))
+                                  return false;
+                              var dataPermission = user.DataPermission;
+                              if (user.Type == UserType.DefaultUser && dataPermission != null)
+                                  return dataPermission.DataScope != DataScope.All && dataPermission.OrgIds.Count == 0;
+                              return false;
+                          },
+                          a => a.OwnerId == user.Id
+                      );
+                      fsql.GlobalFilter.ApplyOnlyIf<IData>(FilterNames.Data,
+                          () =>
+                          {
+                              if (!(user?.Id > 0))
+                                  return false;
+                              var dataPermission = user.DataPermission;
+                              if (user.Type == UserType.DefaultUser && dataPermission != null)
+                                  return dataPermission.DataScope != DataScope.All && dataPermission.OrgIds.Count > 0;
+                              return false;
+                          },
+                          a => a.OwnerId == user.Id || user.DataPermission.OrgIds.Contains(a.OwnerOrgId.Value)
+                      );*/
 
                 //配置实体
                 ConfigEntity(fsql, appConfig, dbConfig);
@@ -524,13 +526,13 @@ namespace mlee.Core.DB
                 #region 审计数据
 
                 //计算服务器时间
-              /*  var serverTime = fsql.Ado.QuerySingle(() => DateTime.UtcNow);
+                var serverTime = fsql.Ado.QuerySingle(() => DateTime.UtcNow);
                 var timeOffset = DateTime.UtcNow.Subtract(serverTime);
                 TimeOffset = timeOffset;
                 fsql.Aop.AuditValue += (s, e) =>
                 {
                     AuditValue(e, timeOffset, user);
-                };*/
+                };
 
                 #endregion 审计数据
 
@@ -564,7 +566,6 @@ namespace mlee.Core.DB
                 }
 
                 #endregion 监听Curd操作
-
                 return fsql;
             });
 

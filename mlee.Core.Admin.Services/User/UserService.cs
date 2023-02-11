@@ -29,21 +29,21 @@ namespace mlee.Core.Services.User
         /// <exception cref="NotImplementedException"></exception>
         public async Task<UserGetOutput> GetAsync(long id)
         {
-            var userEntity = await _userRepository.Select
-      .WhereDynamic(id)
-      //  .IncludeMany(a => a.Roles.Select(b => new RoleEntity { Id = b.Id, Name = b.Name }))
-      // .IncludeMany(a => a.Orgs.Select(b => new OrgEntity { Id = b.Id, Name = b.Name }))
-      .ToOneAsync(a => new
-      {
-          a.Id,
-          a.UserName,
-          a.Name,
-          a.Mobile,
-          a.Email,
-          a.OrgId,
-          a.ManagerUserId,
-          ManagerUserName = a.ManagerUser.Name,
-      });
+            var userEntity = await _userRepository.GetAsync(id);
+            /* .WhereDynamic(id)
+             //  .IncludeMany(a => a.Roles.Select(b => new RoleEntity { Id = b.Id, Name = b.Name }))
+             // .IncludeMany(a => a.Orgs.Select(b => new OrgEntity { Id = b.Id, Name = b.Name }))
+             .ToOneAsync(a => new
+             {
+                 a.Id,
+                 a.UserName,
+                 a.Name,
+                 a.Mobile,
+                 a.Email,
+                 a.OrgId,
+                 a.ManagerUserId,
+                 ManagerUserName = a.ManagerUser.Name,
+             });*/
 
             var output = userEntity.MapTo<UserGetOutput>();
             //Mapper.Map<>(userEntity);

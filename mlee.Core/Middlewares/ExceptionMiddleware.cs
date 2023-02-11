@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
 using mlee.Core.Library;
 using mlee.Core.Library.Dto;
+using mlee.Core.Library.Helpers;
 using mlee.Core.Library.Logs;
 using mlee.Core.Library.Logs.Extensions;
 using mlee.Core.Loggers.Extensions;
@@ -19,12 +20,10 @@ namespace mlee.Core.Middlewares
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger _logger;
 
-        public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
+        public ExceptionMiddleware(RequestDelegate next)
         {
             _next = next;
-            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext httpContext)
@@ -48,7 +47,8 @@ namespace mlee.Core.Middlewares
             /*      context.Result = result;
                   context.ExceptionHandled = true;*/
 
-            var log = (ILog)context.RequestServices.GetService(typeof(ILog));
+            var log = Ioc.Create<ILog>();
+            //(ILog)context.RequestServices.GetService(typeof(ILog));
             log.Caption("异常捕获 - 异常处理过滤器").Content($"状态码：{context.Response.StatusCode}");
             exception.Log(log);
 
