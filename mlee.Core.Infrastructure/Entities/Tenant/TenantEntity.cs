@@ -1,5 +1,6 @@
 ﻿using FreeSql;
 using FreeSql.DataAnnotations;
+using mlee.Core.Infrastructure.Entities.User;
 using mlee.Core.Library.Entities;
 using System;
 using System.Collections.Generic;

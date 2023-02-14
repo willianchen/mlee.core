@@ -1,4 +1,4 @@
-﻿using mlee.Core.Infrastructure.Entities;
+﻿using mlee.Core.Infrastructure.Entities.User;
 using mlee.Core.Repositories;
 using System;
 using System.Collections.Generic;
