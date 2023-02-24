@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mlee.Core.Services.User.Dto
+namespace mlee.Core.Services.User
 {
 
     /// <summary>
@@ -60,9 +60,9 @@ namespace mlee.Core.Services.User.Dto
         /// </summary>
         public string ManagerUserName { get; set; }
 
-  /*      /// <summary>
+        /// <summary>
         /// 员工
         /// </summary>
-        public StaffAddInput Staff { get; set; }*/
+        public StaffAddInput Staff { get; set; }
     }
 }

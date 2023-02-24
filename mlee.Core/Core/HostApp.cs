@@ -48,6 +48,7 @@ using mlee.Core.Logs;
 using mlee.Core.DynamicApi.Attributes;
 using mlee.Core.DynamicApi;
 using mlee.Core.Library.Dto;
+using mlee.Core.RegisterModules;
 
 namespace mlee.Core.Core
 {
@@ -105,7 +106,7 @@ namespace mlee.Core.Core
             //配置Autofac容器
             builder.Host.ConfigureContainer<ContainerBuilder>(builder =>
             {
-                builder.AddInfrasturcture(null, null);
+                builder.AddInfrasturcture(null, new RegisterModule(appConfig));
                 /*    // 控制器注入
                     builder.RegisterModule(new ControllerModule());
 
@@ -479,10 +480,10 @@ namespace mlee.Core.Core
                 }
                 //在具有较高的 Order 值的筛选器之前运行 before 代码
                 //在具有较高的 Order 值的筛选器之后运行 after 代码
-                /*    if (appConfig.DynamicApi.FormatResult)
-                    {
-                        options.Filters.Add<FormatResultFilter>(20);
-                    }*/
+                if (appConfig.DynamicApi.FormatResult)
+                {
+                    options.Filters.Add<FormatResultFilter>(20);
+                }
                 if (appConfig.Log.Operation)
                 {
                     options.Filters.Add<ControllerLogFilter>(10);
@@ -571,18 +572,18 @@ namespace mlee.Core.Core
                 }*/
 
             //动态api
-            services.AddDynamicApi(options =>
-            {
-                Assembly[] assemblies = DependencyContext.Default.RuntimeLibraries
-                .Where(a => a.Name.EndsWith("Service"))
-                .Select(o => Assembly.Load(new AssemblyName(o.Name))).ToArray();
-                options.AddAssemblyOptions(assemblies);
+            /*   services.AddDynamicApi(options =>
+               {
+                   Assembly[] assemblies = DependencyContext.Default.RuntimeLibraries
+                   .Where(a => a.Name.EndsWith("Service"))
+                   .Select(o => Assembly.Load(new AssemblyName(o.Name))).ToArray();
+                   options.AddAssemblyOptions(assemblies);
 
-                options.FormatResult = appConfig.DynamicApi.FormatResult;
-                options.FormatResultType = typeof(ApiResult<>);
+                   options.FormatResult = appConfig.DynamicApi.FormatResult;
+                   options.FormatResultType = typeof(ApiResult<>);
 
-                _hostAppOptions?.ConfigureDynamicApi?.Invoke(options);
-            });
+                   _hostAppOptions?.ConfigureDynamicApi?.Invoke(options);
+               });*/
 
 
 

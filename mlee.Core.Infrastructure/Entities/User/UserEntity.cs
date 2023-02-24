@@ -8,6 +8,11 @@ using System.Xml.Linq;
 using FreeSql;
 using mlee.Core.Library.Entities;
 using mlee.Core.Infrastructure.Entities.Tenant;
+using mlee.Core.Infrastructure.Entities.Org;
+using mlee.Core.Infrastructure.Entities.Role;
+using mlee.Core.Infrastructure.Entities.UserOrg;
+using mlee.Core.Infrastructure.Entities.UserRole;
+using mlee.Core.Infrastructure.Entities.UserStaff;
 
 namespace mlee.Core.Infrastructure.Entities.User
 {
@@ -55,12 +60,12 @@ namespace mlee.Core.Infrastructure.Entities.User
         /// 主属部门Id
         /// </summary>
         public long OrgId { get; set; }
-        /*
-                /// <summary>
-                /// 部门
-                /// </summary>
-                public OrgEntity Org { get; set; }
-        */
+
+        /// <summary>
+        /// 部门
+        /// </summary>
+        public OrgEntity Org { get; set; }
+
         /// <summary>
         /// 直属主管Id
         /// </summary>
@@ -83,34 +88,34 @@ namespace mlee.Core.Infrastructure.Entities.User
         [Column(StringLength = 100)]
         public string Avatar { get; set; }
 
-        /*    /// <summary>
-            /// 用户状态
-            /// </summary>
-            [Column(MapType = typeof(int))]
-            public UserStatus Status { get; set; }
+        /// <summary>
+        /// 用户状态
+        /// </summary>
+        [Column(MapType = typeof(int))]
+        public UserStatus Status { get; set; }
 
-            /// <summary>
-            /// 用户类型
-            /// </summary>
-            [Column(MapType = typeof(int))]
-            public UserType Type { get; set; } = UserType.DefaultUser;
+        /// <summary>
+        /// 用户类型
+        /// </summary>
+        [Column(MapType = typeof(int))]
+        public UserType Type { get; set; } = UserType.DefaultUser;
 
-            /// <summary>
-            /// 角色列表
-            /// </summary>
-            [Navigate(ManyToMany = typeof(UserRoleEntity))]
-            public ICollection<RoleEntity> Roles { get; set; }
+        /// <summary>
+        /// 角色列表
+        /// </summary>
+        [Navigate(ManyToMany = typeof(UserRoleEntity))]
+        public ICollection<RoleEntity> Roles { get; set; }
 
-            /// <summary>
-            /// 部门列表
-            /// </summary>
-            [Navigate(ManyToMany = typeof(UserOrgEntity))]
-            public ICollection<OrgEntity> Orgs { get; set; }
+        /// <summary>
+        /// 部门列表
+        /// </summary>
+        [Navigate(ManyToMany = typeof(UserOrgEntity))]
+        public ICollection<OrgEntity> Orgs { get; set; }
 
-            /// <summary>
-            /// 员工
-            /// </summary>
-            [Navigate(nameof(Id))]
-            public UserStaffEntity Staff { get; set; }*/
+        /// <summary>
+        /// 员工
+        /// </summary>
+        [Navigate(nameof(Id))]
+        public UserStaffEntity Staff { get; set; }
     }
 }

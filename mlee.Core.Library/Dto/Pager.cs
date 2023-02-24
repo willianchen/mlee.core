@@ -100,5 +100,23 @@ namespace mlee.Core.Library.Dto
         /// 排序字段
         /// </summary>
         public string OrderByField { get; set; }
+
+        /// <summary>
+        /// 高级查询条件
+        /// </summary>
+        public FreeSql.Internal.Model.DynamicFilterInfo DynamicFilter { get; set; } = null;
+    }
+
+
+    /// <summary>
+    /// 分页信息输入
+    /// </summary>
+    /// <typeparam name="T">过滤数据</typeparam>
+    public class Pager<T> : Pager
+    {
+        /// <summary>
+        /// 查询条件
+        /// </summary>
+        public T Filter { get; set; }
     }
 }

@@ -32,5 +32,18 @@ namespace mlee.Core.Admin.Controllers
             var result = await userService.GetAsync(id);
             return ApiResult<UserGetOutput>.ToSuccess(result);
         }
+
+
+        /// <summary>
+        /// Get
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<UserGetOutput> GetTestAsync(long id)
+        {
+            var result = await userService.GetAsync(id);
+            return result;
+        }
     }
 }

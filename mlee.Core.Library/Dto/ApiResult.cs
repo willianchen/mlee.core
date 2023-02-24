@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mlee.Core.Library.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Description;
@@ -43,13 +44,23 @@ namespace mlee.Core.Library.Dto
             return new ApiResult((int)code, message);
         }
 
+        /// <summary>
+        /// 系统异常
+        /// </summary>
+        /// <param name="msg">消息</param>
+        /// <param name="code">编码</param>
+        /// <returns></returns>
+        public static Warning ToException(string code = null, string msg = null)
+        {
+            return new Warning(msg, code);
+        }
     }
 
     /// <summary>
     /// API 返回JSON字符串
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ApiResult<T> : ApiResult where T : class
+    public class ApiResult<T> : ApiResult
     {
         /// <summary>
         /// 数据集
@@ -86,12 +97,23 @@ namespace mlee.Core.Library.Dto
             {
                 throw new ArgumentNullException("请填写错误详细信息");
             }
-            return new ApiResult<T>((int)code, null, message);
+            return new ApiResult<T>((int)code, default(T), message: message);
+        }
+
+        /// <summary>
+        /// 系统异常
+        /// </summary>
+        /// <param name="msg">消息</param>
+        /// <param name="code">编码</param>
+        /// <returns></returns>
+        public static Warning ToException(string code = null, string msg = null)
+        {
+            return new Warning(msg, code);
         }
     }
 
 
-    public class PageListResult<T> : ApiResult where T : class
+    public class PageListResult<T> : ApiResult
     {
         /// <summary>
         /// 数据集

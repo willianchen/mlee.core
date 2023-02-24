@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mlee.Core.Services.User.Dto
+namespace mlee.Core.Services.User
 {
 
     /// <summary>

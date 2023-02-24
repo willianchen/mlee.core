@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CustomGenerateData.cs" />
+    <Compile Remove="CustomSyncData.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\mlee.Core.DataAccess\mlee.Core.DataAccess.csproj" />
     <ProjectReference Include="..\mlee.Core.Infrastructure\mlee.Core.Infrastructure.csproj" />
     <ProjectReference Include="..\mlee.Core\mlee.Core.csproj" />
